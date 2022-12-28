@@ -4,7 +4,11 @@ import tensorflow as tf
 from resnet18 import resnet18
 from resdualnetv1 import resdualnet_v1
 
-iters = 10
+tf.config.threading.set_inter_op_parallelism_threads(
+    1
+)
+
+iters = 100
 time_resnet = 0.0
 time_rdv1 = 0.0
 

@@ -19,6 +19,28 @@ def conv3x3(x, out_planes, stride=1, name=None):
     )(x)
 
 
+def pconv(x, out_planes, stride=1, name=None):
+    # x = layers.ZeroPadding2D(padding=1, name=f"{name}_pad")(x)
+    return layers.Conv2D(
+        filters=out_planes,
+        kernel_size=1,
+        strides=stride,
+        use_bias=False,
+        kernel_initializer=kaiming_normal,
+        name=name,
+    )(x)
+
+
+def dconv3x3(x, stride=1, name=None):
+    return layers.DepthwiseConv2D(
+        kernel_size=3,
+        strides=stride,
+        use_bias=False,
+        padding="same",
+        name=name,
+    )(x)
+
+
 def dwht_block(x, planes, stride=1, downsample=None, name=None):
     identity = x
 
