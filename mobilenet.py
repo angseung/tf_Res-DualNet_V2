@@ -128,10 +128,6 @@ def mobilenet_v1(x, **kwargs):
     return mobilenetv1(x, [2, 2, 2, 2], **kwargs)
 
 
-def resnet34(x, **kwargs):
-    return resnet(x, [3, 4, 6, 3], **kwargs)
-
-
 if __name__ == "__main__":
     x = np.random.randn(1, 32, 32, 3)
     x = tf.convert_to_tensor(x, dtype=np.float64)

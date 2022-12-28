@@ -55,7 +55,6 @@ def dualpath_block(x, planes, stride=1, downsample=None, name=None):
     out = pconv(out, planes, name=f"{name}.pconv")
     out = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name=f"{name}.bn2")(out)
 
-
     out_1 = dconv3x3(out, stride=1, name=f"{name}.dconv2_1")
     out_2 = dconv3x3(out, stride=1, name=f"{name}.dconv2_2")
     out = SeLU(0.5 * (out_1 + out_2))
@@ -133,6 +132,7 @@ def resdualnetv1(x, blocks_per_layer, num_classes=10):
 
 def resdualnet_v1(x, **kwargs):
     return resdualnetv1(x, [2, 2, 2, 2], **kwargs)
+
 
 if __name__ == "__main__":
     x = np.random.randn(1, 32, 32, 3)

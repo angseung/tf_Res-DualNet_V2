@@ -55,8 +55,9 @@ def dwht_block(x, planes, stride=1, downsample=None, name=None):
     if x.shape[3] != planes:
         pad_tensor = tf.zeros(shape=out.shape)
         out = layers.Concatenate(axis=3)([out, pad_tensor])
-        out = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name=f"{name}.bn2")(out)
-
+        out = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name=f"{name}.bn2")(
+            out
+        )
 
     out_1 = dconv3x3(out, stride=1, name=f"{name}.dconv2_1")
     out_2 = dconv3x3(out, stride=1, name=f"{name}.dconv2_2")
