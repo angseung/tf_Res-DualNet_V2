@@ -1,6 +1,9 @@
 import math
+import numpy as np
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+from tensorflow.keras.activations import selu as SeLU
 
 kaiming_normal = keras.initializers.VarianceScaling(
     scale=2.0, mode="fan_out", distribution="untruncated_normal"
@@ -44,19 +47,28 @@ def dconv3x3(x, stride=1, name=None):
 def dwht_block(x, planes, stride=1, downsample=None, name=None):
     identity = x
 
-    out = conv3x3(x, planes, stride=stride, name=f"{name}.conv1")
+    out_1 = dconv3x3(x, stride=stride, name=f"{name}.dconv1_1")
+    out_2 = dconv3x3(x, stride=stride, name=f"{name}.dconv1_2")
+    out = SeLU(0.5 * (out_1 + out_2))
     out = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name=f"{name}.bn1")(out)
-    out = layers.ReLU(name=f"{name}.relu1")(out)
 
-    out = conv3x3(out, planes, name=f"{name}.conv2")
-    out = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name=f"{name}.bn2")(out)
+    if x.shape[3] != planes:
+        pad_tensor = tf.zeros(shape=out.shape)
+        out = layers.Concatenate(axis=3)([out, pad_tensor])
+        out = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name=f"{name}.bn2")(out)
+
+
+    out_1 = dconv3x3(out, stride=1, name=f"{name}.dconv2_1")
+    out_2 = dconv3x3(out, stride=1, name=f"{name}.dconv2_2")
+    out = SeLU(0.5 * (out_1 + out_2))
+    out = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name=f"{name}.bn3")(out)
 
     if downsample is not None:
         for layer in downsample:
             identity = layer(identity)
 
     out = layers.Add(name=f"{name}.add")([identity, out])
-    out = layers.ReLU(name=f"{name}.relu2")(out)
+    out = SeLU(out)
 
     return out
 
@@ -87,7 +99,7 @@ def make_layer(x, planes, blocks, stride=1, name=None):
 
 
 def resdualnetv2(x, blocks_per_layer, num_classes=10):
-    x = layers.ZeroPadding2D(padding=3, name="conv1_pad")(x)
+    # x = layers.ZeroPadding2D(padding=3, name="conv1_pad")(x)
     x = layers.Conv2D(
         filters=64,
         kernel_size=3,
