@@ -95,7 +95,7 @@ def make_layer(x, planes, blocks, stride=1, name=None):
 def shufflenetv1(x, blocks_per_layer, num_classes=10):
     # x = layers.ZeroPadding2D(padding=3, name="conv1_pad")(x)
     x = layers.Conv2D(
-        filters=64,
+        filters=24,
         kernel_size=3,
         strides=1,
         padding="same",
@@ -105,13 +105,14 @@ def shufflenetv1(x, blocks_per_layer, num_classes=10):
     )(x)
     x = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name="bn1")(x)
     x = layers.ReLU(name="relu1")(x)
+    x = layers.ZeroPadding2D((12, 12))(x)
     # x = layers.ZeroPadding2D(padding=1, name="maxpool_pad")(x)
     # x = layers.MaxPool2D(pool_size=3, strides=2, name="maxpool")(x)
 
-    x = make_layer(x, 64, blocks_per_layer[0], name="layer1")
-    x = make_layer(x, 128, blocks_per_layer[1], stride=2, name="layer2")
-    x = make_layer(x, 256, blocks_per_layer[2], stride=2, name="layer3")
-    x = make_layer(x, 512, blocks_per_layer[3], stride=2, name="layer4")
+    x = make_layer(x, 240, blocks_per_layer[0], stride=2, name="layer1")
+    x = make_layer(x, 480, blocks_per_layer[1], stride=2, name="layer2")
+    x = make_layer(x, 960, blocks_per_layer[2], stride=2, name="layer3")
+    # x = make_layer(x, 512, blocks_per_layer[3], stride=2, name="layer4")
 
     x = layers.GlobalAveragePooling2D(name="avgpool")(x)
     # initializer = keras.initializers.RandomUniform(
