@@ -101,14 +101,14 @@ def resnet(x, blocks_per_layer, num_classes=10):
     return x
 
 
-def resnet18(x, **kwargs):
+def resnet18_dws(x, **kwargs):
     return resnet(x, [2, 2, 2, 2], **kwargs)
 
 
-def resnet34(x, **kwargs):
+def resnet34_dws(x, **kwargs):
     return resnet(x, [3, 4, 6, 3], **kwargs)
 
 if __name__ == "__main__":
     x = np.random.randn(1, 32, 32, 3)
     dummy_input = tf.convert_to_tensor(x, dtype=np.float64)
-    net = resnet18(x)
+    net = resnet18_dws(x)
